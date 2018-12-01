@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export function itemsHasErrored(bool) {
     return {
         type: 'ITEMS_HAS_ERRORED',
@@ -23,18 +25,30 @@ export function itemsFetchData(url) {
     return (dispatch) => {
         dispatch(itemsIsLoading(true));
 
-        fetch(url)
+        // fetch(url)
+        //     .then((response) => {
+        //         if (!response.ok) {
+        //             throw Error(response.statusText);
+        //         }
+
+        //         dispatch(itemsIsLoading(false));
+
+        //         return response;
+        //     })
+        //     .then((response) => response.json())
+        //     .then((items) => dispatch(itemsFetchDataSuccess(items)))
+        //     .catch(() => dispatch(itemsHasErrored(true)));
+        axios.get(url)
             .then((response) => {
-                if (!response.ok) {
+                if (response.status !== 200) {
                     throw Error(response.statusText);
                 }
 
                 dispatch(itemsIsLoading(false));
 
-                return response;
+                return response.data;
             })
-            .then((response) => response.json())
-            .then((items) => dispatch(itemsFetchDataSuccess(items)))
+            .then(items => dispatch(itemsFetchDataSuccess(items)))
             .catch(() => dispatch(itemsHasErrored(true)));
     };
 }
